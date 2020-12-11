@@ -35,7 +35,7 @@ void trataComunicacaoComServidor(void * params)
     {
        float temperatura = 20.0 + (float)rand()/(float)(RAND_MAX/10.0);
        sprintf(mensagem, "temperatura1: %f", temperatura);
-       mqtt_envia_mensagem("sensores/temperatura", mensagem);
+       mqtt_envia_mensagem("fse2020/160010195/dispositivos/8c:aa:b5:8b:52:e0", mensagem);
        vTaskDelay(3000 / portTICK_PERIOD_MS);
     }
   }

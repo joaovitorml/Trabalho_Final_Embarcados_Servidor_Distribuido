@@ -34,7 +34,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
             xSemaphoreGive(conexaoMQTTSemaphore);
-            msg_id = esp_mqtt_client_subscribe(client, "servidor/resposta", 0);
+            msg_id = esp_mqtt_client_subscribe(client, "fse2020/160010195/dispositivos/8c:aa:b5:8b:52:e0", 0);
             break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
@@ -71,7 +71,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 void mqtt_start()
 {
     esp_mqtt_client_config_t mqtt_config = {
-        .uri = "mqtt://mqtt.eclipse.org",
+        .uri = "mqtt://mqtt.eclipseprojects.io",
     };
     client = esp_mqtt_client_init(&mqtt_config);
     esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, client);
@@ -81,5 +81,5 @@ void mqtt_start()
 void mqtt_envia_mensagem(char * topico, char * mensagem)
 {
     int message_id = esp_mqtt_client_publish(client, topico, mensagem, 0, 1, 0);
-    ESP_LOGI(TAG, "Mesnagem enviada, ID: %d", message_id);
+    ESP_LOGI(TAG, "Mensagem enviada, ID: %d", message_id);
 }
