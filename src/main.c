@@ -6,13 +6,22 @@
 #include "esp_http_client.h"
 #include "esp_log.h"
 #include "freertos/semphr.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
+#include "driver/gpio.h"
 
 #include "../include/wifi.h"
 #include "../include/http_client.h"
 #include "../include/mqtt.h"
+#include "../include/button.h"
 
 xSemaphoreHandle conexaoWifiSemaphore;
 xSemaphoreHandle conexaoMQTTSemaphore;
+
+void Button(void * params){
+  ButtonConfiguration();
+}
 
 void conectadoWifi(void * params)
 {
@@ -56,5 +65,6 @@ void app_main(void)
     wifi_start();
 
     xTaskCreate(&conectadoWifi,  "Conexão ao MQTT", 4096, NULL, 1, NULL);
+    xTaskCreate(&Button, "Botão", 4096, NULL, 1, NULL);
     xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096, NULL, 1, NULL);
 }
