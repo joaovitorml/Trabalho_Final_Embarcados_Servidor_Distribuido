@@ -18,7 +18,7 @@
 #include "esp_log.h"
 #include "mqtt_client.h"
 
-#include "../include/mqtt.h"
+#include "mqtt.h"
 
 #define TAG "MQTT"
 

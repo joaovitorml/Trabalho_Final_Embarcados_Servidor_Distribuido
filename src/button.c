@@ -11,7 +11,7 @@
 #include "nvs_flash.h"
 #include "esp_log.h"
 #include "driver/gpio.h"
-#include "../include/button.h"
+#include "button.h"
 
 #define BOTAO_1 0
 

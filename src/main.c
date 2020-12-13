@@ -11,11 +11,11 @@
 #include "freertos/queue.h"
 #include "driver/gpio.h"
 
-#include "../include/wifi.h"
-#include "../include/http_client.h"
-#include "../include/mqtt.h"
-#include "../include/button.h"
-#include "../include/sensor.h"
+#include "wifi.h"
+#include "http_client.h"
+#include "mqtt.h"
+#include "button.h"
+#include "sensor.h"
 
 xSemaphoreHandle semaphSensor;
 xSemaphoreHandle semaphButton;
