@@ -15,12 +15,22 @@
 #include "../include/http_client.h"
 #include "../include/mqtt.h"
 #include "../include/button.h"
+#include "../include/sensor.h"
 
+xSemaphoreHandle semaphSensor;
+xSemaphoreHandle semaphButton;
 xSemaphoreHandle conexaoWifiSemaphore;
 xSemaphoreHandle conexaoMQTTSemaphore;
 
+void SensorData(void * params){
+  if(xSemaphoreTake(semaphSensor, portMAX_DELAY))
+    {
+      ReadData();
+    }
+}
+
 void Button(void * params){
-  ButtonConfiguration();
+    ButtonConfiguration();
 }
 
 void conectadoWifi(void * params)
@@ -64,7 +74,8 @@ void app_main(void)
     conexaoMQTTSemaphore = xSemaphoreCreateBinary();
     wifi_start();
 
-    xTaskCreate(&conectadoWifi,  "Conexão ao MQTT", 4096, NULL, 1, NULL);
-    xTaskCreate(&Button, "Botão", 4096, NULL, 1, NULL);
-    xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096, NULL, 1, NULL);
+    xTaskCreate(&conectadoWifi,  "Conexão ao MQTT", 2048, NULL, 1, NULL);
+    xTaskCreate(&Button, "Botão", 2048, NULL, 1, NULL);
+    xTaskCreate(&SensorData, "Leitura do Sensor", 2048, NULL, 1, NULL);
+    xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 2048, NULL, 1, NULL);
 }

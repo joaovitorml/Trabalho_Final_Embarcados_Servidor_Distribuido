@@ -3,6 +3,12 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
+#include "freertos/event_groups.h"
+#include "esp_system.h"
+#include "esp_wifi.h"
+#include "esp_event.h"
+#include "esp_log.h"
+#include "nvs_flash.h"
 #include "esp_log.h"
 #include "driver/gpio.h"
 #include "../include/button.h"
@@ -10,6 +16,8 @@
 #define BOTAO_1 0
 
 xQueueHandle filaDeInterrupcao;
+
+extern xSemaphoreHandle semaphButton;
 
 static void IRAM_ATTR gpio_isr_handler(void *args)
 {
@@ -24,6 +32,7 @@ void trataInterrupcaoBotao()
 
   while(true)
   {
+    xSemaphoreTake(semaphButton, portMAX_DELAY);
     if(xQueueReceive(filaDeInterrupcao, &pino, portMAX_DELAY))
     {
       // De-bouncing
@@ -45,6 +54,7 @@ void trataInterrupcaoBotao()
       }
 
     }
+    xSemaphoreGive(semaphButton);
   }
 }
 
