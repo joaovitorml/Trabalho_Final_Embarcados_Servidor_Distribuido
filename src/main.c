@@ -42,7 +42,6 @@ void conectadoWifi(void *params)
 		//vTaskDelay(3000 / portTICK_PERIOD_MS);
 		if (xSemaphoreTake(conexaoWifiSemaphore, portMAX_DELAY))
 		{
-			ESP_LOGE("SEMDEBUG", "PASSOU DO SEMAFORO DE WIFI");
 			// Processamento Internet
 			mqtt_start();
 		}
