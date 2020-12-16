@@ -24,10 +24,10 @@ xSemaphoreHandle conexaoMQTTSemaphore;
 
 void SensorData(void *params)
 {
-	if (xSemaphoreTake(semaphSensor, portMAX_DELAY))
-	{
+	//if (xSemaphoreTake(semaphSensor, portMAX_DELAY))
+	//{
 		ReadData();
-	}
+	//}
 }
 
 void Button(void *params)
@@ -57,6 +57,7 @@ void trataComunicacaoComServidor(void *params)
 		{
 			float temperatura = 20.0 + (float)rand() / (float)(RAND_MAX / 10.0);
 			sprintf(mensagem, "temperatura1: %f", temperatura);
+			//esp aquiles 160010331 20:10:7a:e9:f1:c6
 			mqtt_envia_mensagem("fse2020/160010195/dispositivos/8c:aa:b5:8b:52:e0", mensagem);
 			vTaskDelay(3000 / portTICK_PERIOD_MS);
 		}
@@ -83,5 +84,5 @@ void app_main(void)
 	xTaskCreate(&conectadoWifi, "Conexão ao MQTT", 2048, NULL, 1, NULL);
 	xTaskCreate(&Button, "Botão", 2048, NULL, 1, NULL);
 	xTaskCreate(&SensorData, "Leitura do Sensor", 2048, NULL, 1, NULL);
-	xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096, NULL, 1, NULL);
+	// xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096, NULL, 1, NULL);
 }

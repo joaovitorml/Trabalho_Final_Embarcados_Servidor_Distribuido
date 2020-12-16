@@ -32,7 +32,7 @@ void trataInterrupcaoBotao()
 
   while(true)
   {
-    xSemaphoreTake(semaphButton, portMAX_DELAY);
+    //xSemaphoreTake(semaphButton, portMAX_DELAY);
     if(xQueueReceive(filaDeInterrupcao, &pino, portMAX_DELAY))
     {
       // De-bouncing
@@ -54,7 +54,7 @@ void trataInterrupcaoBotao()
       }
 
     }
-    xSemaphoreGive(semaphButton);
+    //xSemaphoreGive(semaphButton);
   }
 }
 

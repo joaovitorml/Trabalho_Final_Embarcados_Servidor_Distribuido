@@ -24,17 +24,19 @@
 
 extern xSemaphoreHandle conexaoMQTTSemaphore;
 esp_mqtt_client_handle_t client;
+char sub_topic[] = "fse2020/160010195/dispositivos/8c:aa:b5:8b:52:e0",
+		publish_topic[3][100] = {{0}};
 
 static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
 {
     esp_mqtt_client_handle_t client = event->client;
-    int msg_id;
-    
+    int msg_id; 
+
     switch (event->event_id) {
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
             xSemaphoreGive(conexaoMQTTSemaphore);
-            msg_id = esp_mqtt_client_subscribe(client, "fse2020/160010195/dispositivos/8c:aa:b5:8b:52:e0", 0);
+            msg_id = esp_mqtt_client_subscribe(client, sub_topic, 0);
             break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");

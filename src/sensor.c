@@ -13,25 +13,28 @@
 
 #include "dht11.h"
 
+
 #define SENSOR 4
 
 static struct dht11_reading data;
 extern xSemaphoreHandle semaphSensor;
-
+extern xSemaphoreHandle conexaoMQTTSemaphore;
 void ReadData(){
 
     DHT11_init(SENSOR);
-
+	xSemaphoreTake(conexaoMQTTSemaphore, portMAX_DELAY);
     while(1){
-        xSemaphoreTake(semaphSensor, portMAX_DELAY);
-        vTaskDelay(2000 / portTICK_PERIOD_MS);
+        
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
         data = DHT11_read();
 
         if(data.temperature > -1){
             printf("Temp: %d\n",data.temperature);
             printf("Umi: %d\n", data.humidity);
             printf("Estado: %d\n", data.status);
-        }
-        xSemaphoreGive(semaphSensor);
+        }else{
+			ESP_LOGE("SENSOR","ERRO DE LEITURA");
+		}
+        
     }
 }
