@@ -83,6 +83,6 @@ void app_main(void)
 
 	xTaskCreate(&conectadoWifi, "Conexão ao MQTT", 2048, NULL, 1, NULL);
 	xTaskCreate(&Button, "Botão", 2048, NULL, 1, NULL);
-	xTaskCreate(&SensorData, "Leitura do Sensor", 2048, NULL, 1, NULL);
+	xTaskCreate(&SensorData, "Leitura do Sensor", 20048, NULL, 1, NULL);
 	// xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096, NULL, 1, NULL);
 }

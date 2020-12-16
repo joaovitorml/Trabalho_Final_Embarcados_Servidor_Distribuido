@@ -18,3 +18,18 @@ menu "Configuração do Wifi Configuration"
         help
             Configure o valor máximo de tentativas de conexão.
 endmenu
+
+menu "matricula e mac"
+
+    config MAC_ADDR
+        string "endereco mac"
+        default "000"
+        help
+            endereco mac da esp
+
+    config MATRICULA
+        string "matricula"
+        default "000"
+        help
+            matricula usada no topico
+endmenu

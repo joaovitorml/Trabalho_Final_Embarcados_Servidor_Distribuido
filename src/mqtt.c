@@ -5,12 +5,12 @@
 #include "esp_system.h"
 #include "esp_event.h"
 #include "esp_netif.h"
-
+#include "cJSON.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 #include "freertos/queue.h"
-
+#include "nvs_flash.h"
 #include "lwip/sockets.h"
 #include "lwip/dns.h"
 #include "lwip/netdb.h"
@@ -21,11 +21,17 @@
 #include "mqtt.h"
 
 #define TAG "MQTT"
+#define MATRICULA CONFIG_MATRICULA
+#define MAC_ADDR CONFIG_MAC_ADDR
 
 extern xSemaphoreHandle conexaoMQTTSemaphore;
 esp_mqtt_client_handle_t client;
-char sub_topic[] = "fse2020/160010195/dispositivos/8c:aa:b5:8b:52:e0",
-		publish_topic[3][100] = {{0}};
+char sub_topic[100],
+		room[100] = "";
+		//publish_topic[3][200] = {{0}},
+
+static int first = 1;
+int out_state;
 
 static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
 {
@@ -35,7 +41,6 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
     switch (event->event_id) {
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-            xSemaphoreGive(conexaoMQTTSemaphore);
             msg_id = esp_mqtt_client_subscribe(client, sub_topic, 0);
             break;
         case MQTT_EVENT_DISCONNECTED:
@@ -52,6 +57,18 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             break;
         case MQTT_EVENT_DATA:
             ESP_LOGI(TAG, "MQTT_EVENT_DATA");
+			if(first)
+			{
+				first = 0;
+				strcpy(room,event->data);
+				xSemaphoreGive(conexaoMQTTSemaphore);
+			}
+			else
+			{
+				cJSON *json = cJSON_Parse(event->data);
+				out_state = json->valueint;
+				ESP_LOGI("MQTT","VALOR DO OUT_STATE %d",out_state);
+			}
             printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
             printf("DATA=%.*s\r\n", event->data_len, event->data);
             break;
@@ -72,6 +89,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 
 void mqtt_start()
 {
+	sprintf(sub_topic,"fse2020/%s/dispositivos/%s",MATRICULA,MAC_ADDR);
     esp_mqtt_client_config_t mqtt_config = {
         .uri = "mqtt://mqtt.eclipseprojects.io",
     };
