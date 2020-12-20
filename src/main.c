@@ -9,16 +9,14 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
-#include "driver/gpio.h"
 
 #include "wifi.h"
-#include "http_client.h"
 #include "mqtt.h"
 #include "button.h"
 #include "sensor.h"
 
-xSemaphoreHandle semaphSensor;
-xSemaphoreHandle semaphButton;
+// xSemaphoreHandle semaphSensor;
+// xSemaphoreHandle semaphButton;
 xSemaphoreHandle conexaoWifiSemaphore;
 xSemaphoreHandle conexaoMQTTSemaphore;
 
@@ -77,12 +75,12 @@ void app_main(void)
 
 	conexaoWifiSemaphore = xSemaphoreCreateBinary();
 	conexaoMQTTSemaphore = xSemaphoreCreateBinary();
-	semaphSensor = xSemaphoreCreateBinary();
-	semaphButton = xSemaphoreCreateBinary();
+	// semaphSensor = xSemaphoreCreateBinary();
+	// semaphButton = xSemaphoreCreateBinary();
 	wifi_start();
 
-	xTaskCreate(&conectadoWifi, "Conexão ao MQTT", 2048, NULL, 1, NULL);
-	xTaskCreate(&Button, "Botão", 2048, NULL, 1, NULL);
-	xTaskCreate(&SensorData, "Leitura do Sensor", 20048, NULL, 1, NULL);
+	xTaskCreate(&conectadoWifi, "Conexão ao MQTT", 9096, NULL, 1, NULL);
+	//xTaskCreate(&Button, "Botão", 4096, NULL, 1, NULL);
+	xTaskCreate(&SensorData, "Leitura do Sensor", 8048, NULL, 1, NULL);
 	// xTaskCreate(&trataComunicacaoComServidor, "Comunicação com Broker", 4096, NULL, 1, NULL);
 }

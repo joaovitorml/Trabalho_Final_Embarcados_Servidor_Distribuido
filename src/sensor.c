@@ -22,12 +22,13 @@ static struct dht11_reading data;
 extern xSemaphoreHandle semaphSensor;
 extern xSemaphoreHandle conexaoMQTTSemaphore;
 extern char room[100];
+char humid_topic[200], temp_topic[200];
+
 void ReadData(){
     DHT11_init(SENSOR);
 	xSemaphoreTake(conexaoMQTTSemaphore, portMAX_DELAY);
-	char humid_topic[200];
-	char temp_topic[200];
 	ESP_LOGI("SENSOR","\n\n\n antes do sprintf \n\n\n");
+
 	sprintf(humid_topic,"fse2020/%s/%s/umidade",MATRICULA,room);
 	sprintf(temp_topic,"fse2020/%s/%s/temperatura",MATRICULA,room);
 	ESP_LOGI("SENSOR","\n\n\n depois do sprintf \n\n\n");
@@ -36,11 +37,16 @@ void ReadData(){
 		*temp_value= NULL,
 		*humid_value = NULL,
 		*json_room = NULL;
+	ESP_LOGI("SENSOR","\n\n\n depois da declaração \n\n\n");
 	json_room = cJSON_CreateString(room);
+	ESP_LOGI("SENSOR","\n\n\n depois do primeiro json \n\n\n");
     while(1){
         
         vTaskDelay(1000 / portTICK_PERIOD_MS);
+		ESP_LOGI("SENSOR","\n\n\n depois do vtask \n\n\n");
+
         data = DHT11_read();
+	ESP_LOGI("SENSOR","\n\n\n depois do DHT_read \n\n\n");
 		
         if(data.temperature > -1){
             printf("Temp: %d\n",data.temperature);
@@ -63,6 +69,5 @@ void ReadData(){
         }else{
 			ESP_LOGE("SENSOR","ERRO DE LEITURA");
 		}
-        
     }
 }

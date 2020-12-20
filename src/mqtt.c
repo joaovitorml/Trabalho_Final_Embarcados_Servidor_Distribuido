@@ -19,11 +19,12 @@
 #include "mqtt_client.h"
 
 #include "mqtt.h"
+#include "led.h"
+#include "nvs_config.h"
 
 #define TAG "MQTT"
 #define MATRICULA CONFIG_MATRICULA
 #define MAC_ADDR CONFIG_MAC_ADDR
-
 extern xSemaphoreHandle conexaoMQTTSemaphore;
 esp_mqtt_client_handle_t client;
 char sub_topic[100],
@@ -32,9 +33,11 @@ char sub_topic[100],
 
 static int first = 1;
 int out_state;
+int32_t nvs_first;
 
 static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
 {
+	
     esp_mqtt_client_handle_t client = event->client;
     int msg_id; 
 
@@ -42,6 +45,13 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
             msg_id = esp_mqtt_client_subscribe(client, sub_topic, 0);
+			
+			nvs_first = le_valor_nvs();
+			if(nvs_first){
+				nvs_first = 0;
+				printf("primeira vez\n");
+			}
+			grava_valor_nvs(nvs_first);
             break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
@@ -68,6 +78,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
 				cJSON *json = cJSON_Parse(event->data);
 				out_state = json->valueint;
 				ESP_LOGI("MQTT","VALOR DO OUT_STATE %d",out_state);
+				set_led_state(out_state);
 			}
             printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
             printf("DATA=%.*s\r\n", event->data_len, event->data);
@@ -90,6 +101,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
 void mqtt_start()
 {
 	sprintf(sub_topic,"fse2020/%s/dispositivos/%s",MATRICULA,MAC_ADDR);
+	init_led();
     esp_mqtt_client_config_t mqtt_config = {
         .uri = "mqtt://mqtt.eclipseprojects.io",
     };
